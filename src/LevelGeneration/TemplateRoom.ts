@@ -4,6 +4,12 @@ import { Room, isValidDoor } from "./LevelGeneration";
 import { RandomNumberGenerator } from "../RandomNumberGenerator";
 import { Rectangle } from "../Utils";
 
+/**
+ * Interprets a string as a TemplateRoom. Each line of the input string
+ * corresponds to one row of the room. A '#' character places a well, a '.'
+ * character places a floor tile, and a '=' character places a door. Any other
+ * character is treated as empty space.
+ */
 export function parseTemplateRoom(room: string): TemplateRoom {
   let lines = room.split("\n").filter(s => s.length > 0);
   const height = lines.length;
@@ -65,6 +71,8 @@ export class TemplateRoom implements Room {
     for (let c of roomRect.areaCoords()) {
       const roomTile = this.tiles.get(c.y, c.x);
       if (roomTile === Tile.Wall) tiles.set(c.y + py, c.x + px, roomTile);
+      // All valid doors in the template are placed. Invalid doors are replaced
+      // by walls.
       if (roomTile === Tile.Door) {
         if (isValidDoor(tiles, c.y + py, c.x + px)) {
           tiles.set(c.y + py, c.x + px, roomTile);

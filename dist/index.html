@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>vr-rogue-experiments</title>
     <script src="main.js"></script>
   </head>
@@ -9,15 +9,17 @@
     <a-scene background="color: #000" renderer="foveationLevel:3">
       <a-asset>
         <img src="wall.png" id="wall" />
-        <img src="floor.jpg" id="floor" />
       </a-asset>
 
-      <a-entity id="rig" movement-controls="fly: true">
-        <a-entity camera position="0 1.6 0" look-controls="pointerLockEnabled: true"></a-entity>
+      <a-entity id="rig" movement-controls>
+        <a-entity
+          camera
+          position="0 1.6 0"
+          look-controls="pointerLockEnabled: true"
+        ></a-entity>
       </a-entity>
 
-      <!-- <a-entity camera look-controls orbit-controls="target: 0 1.6 -0.5; minDistance: 0.5; maxDistance: 180; initialPosition: 0 50 0"></a-entity> -->
-      <a-entity position="-25 25 -35" rotation="90 0 0" rogue-level shadow></a-entity>
+      <a-entity position="-25 25 -35" rotation="90 0 0" rogue-level></a-entity>
     </a-scene>
   </body>
 </html>

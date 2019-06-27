@@ -16,17 +16,23 @@ export class RectangularRoom implements Room {
   }
 
   canPlaceAt(tiles: Array2D<Tile>, py: number, px: number): boolean {
-    let atLeastOneDoor = false;
+    // Rules for RectangleRoom Placement:
+    // 1. Must not overlap with any floor or door tiles already in the level.
+    // 2. There must be at least one valid door location (i.e., a location along
+    //    the room's wall - but not a corner - that is adjacent to a floor tile
+    //    alreay in the level).
     const rect = new Rectangle(py, px, this.height(), this.width());
+    // Check to make sure we don't overlap with any existing floor or door tiles
+    for (let c of rect.areaCoords()) {
+      const levelTile = tiles.get(c.y, c.x);
+      if (levelTile === Tile.Floor || levelTile === Tile.Door) return false;
+    }
     // Check to make sure there is at least one valid door
+    let atLeastOneDoor = false;
     for (let c of rect.perimeterCoords(1)) {
       if (isValidDoor(tiles, c.y, c.x)) {
         atLeastOneDoor = true;
       }
-    }
-    // Check to make sure we don't overlap with any existing floor tiles
-    for (let c of rect.areaCoords()) {
-      if (tiles.get(c.y, c.x) === Tile.Floor) return false;
     }
     return atLeastOneDoor;
   }
@@ -42,7 +48,7 @@ export class RectangularRoom implements Room {
     for (let c of rect.perimeterCoords()) {
       tiles.set(c.y, c.x, Tile.Wall);
     }
-    // Place doors
+    // Place door
     let validDoors = Array<{ y: number; x: number }>();
     for (let c of rect.perimeterCoords(1)) {
       if (isValidDoor(tiles, c.y, c.x)) {
@@ -60,6 +66,10 @@ export class RectangularRoom implements Room {
   }
 }
 
+/**
+ * Returns a `RoomGen` instance that returns random RectangleRoom's whose height
+ * and width are in the given ranges. The ranges include both min and max values
+ */
 export function RectangleRoomGenerator(
   minHeight: number,
   maxHeight: number,
@@ -67,8 +77,8 @@ export function RectangleRoomGenerator(
   maxWidth: number
 ): RoomGen {
   return rng => {
-    const height = Math.ceil(rng.next() * (maxHeight - minHeight)) + minHeight;
-    const width = Math.ceil(rng.next() * (maxWidth - minWidth)) + minWidth;
-    return new RectangularRoom(height, width);
+    const h = Math.floor(rng.next() * (maxHeight - minHeight)) + minHeight;
+    const w = Math.floor(rng.next() * (maxWidth - minWidth)) + minWidth;
+    return new RectangularRoom(h, w);
   };
 }
