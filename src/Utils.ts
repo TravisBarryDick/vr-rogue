@@ -5,6 +5,20 @@ export function randomChoice<T>(rng: RandomNumberGenerator, arr: Array<T>): T {
   return arr[ix];
 }
 
+export function discreteSample(
+  rng: RandomNumberGenerator,
+  weights: Array<number>
+): number {
+  const totalWeight = weights.reduce((t, x) => t + x);
+  const p = rng.next() * totalWeight;
+  let acc = 0;
+  for (let i = 0; i < weights.length; i++) {
+    acc += weights[i];
+    if (acc >= p) return i;
+  }
+  return -1;
+}
+
 /**
  * A helper class for representing rectangles and enumerating the coordintaes
  * belonging to it.
@@ -19,7 +33,7 @@ export class Rectangle {
 
   /**
    * Returns a new rectangle whose height and width has been enlarged by the
-   * given amounts. 
+   * given amounts.
    */
   enlarge(heightDelta: number, widthDelta: number) {
     const new_y = this.y - Math.floor(heightDelta / 2);

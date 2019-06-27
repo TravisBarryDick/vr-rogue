@@ -1,7 +1,7 @@
 import { Array2D } from "../Array2D";
 import { Level, Tile, tile2char } from "../Level";
 import { RandomNumberGenerator } from "../RandomNumberGenerator";
-import { randomChoice } from "../Utils";
+import { discreteSample, randomChoice } from "../Utils";
 
 //////////////////
 // --- Room --- //
@@ -32,8 +32,19 @@ export class LevelGenerator {
     private height: number,
     private width: number,
     private maxRooms: number,
-    private roomGens: Array<RoomGen>
-  ) {}
+    private roomGens: Array<RoomGen>,
+    private weights?: Array<number>
+  ) {
+    // If weights were not provided, give rooms equal weight
+    if (weights == null) {
+      this.weights = roomGens.map(() => 1.0);
+    }
+  }
+
+  private chooseRoom(rng: RandomNumberGenerator): Room {
+    const ix = discreteSample(rng, this.weights);
+    return this.roomGens[ix](rng);
+  }
 
   /**
    * Generates a random level.
@@ -44,14 +55,14 @@ export class LevelGenerator {
     verbose: boolean = false
   ): Level {
     let tiles = new Array2D<Tile>(this.height, this.width, Tile.Empty);
-    let room: Room = randomChoice(rng, this.roomGens)(rng);
+    let room = this.chooseRoom(rng);
     this.addRoom(rng, tiles, room, true);
     if (verbose) {
       console.log("Room 0:\n");
       console.log(tiles.toString(tile2char));
     }
     for (let i = 0; i < this.maxRooms; i++) {
-      let room: Room = randomChoice(rng, this.roomGens)(rng);
+      let room = this.chooseRoom(rng);
       this.addRoom(rng, tiles, room);
       if (verbose) {
         console.log(`Room ${i + 1}:\n`);
