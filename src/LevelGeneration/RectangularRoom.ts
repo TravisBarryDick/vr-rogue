@@ -1,7 +1,7 @@
 import { Array2D } from "../Array2D";
 import { Tile } from "../Level";
 import { Room, RoomGen, isValidDoor } from "./LevelGeneration";
-import { rectAreaCoords, rectPerimeterCoords, randomChoice } from "../Utils";
+import { Rectangle, randomChoice } from "../Utils";
 import { RandomNumberGenerator } from "../RandomNumberGenerator";
 
 export class RectangularRoom implements Room {
@@ -17,14 +17,15 @@ export class RectangularRoom implements Room {
 
   canPlaceAt(tiles: Array2D<Tile>, py: number, px: number): boolean {
     let atLeastOneDoor = false;
+    const rect = new Rectangle(py, px, this.height(), this.width());
     // Check to make sure there is at least one valid door
-    for (let c of rectPerimeterCoords(py, px, this.height(), this.width(), 1)) {
+    for (let c of rect.perimeterCoords(1)) {
       if (isValidDoor(tiles, c.y, c.x)) {
         atLeastOneDoor = true;
       }
     }
     // Check to make sure we don't overlap with any existing floor tiles
-    for (let c of rectAreaCoords(py, px, this.height(), this.width())) {
+    for (let c of rect.areaCoords()) {
       if (tiles.get(c.y, c.x) === Tile.Floor) return false;
     }
     return atLeastOneDoor;
@@ -36,13 +37,14 @@ export class RectangularRoom implements Room {
     py: number,
     px: number
   ): void {
+    const rect = new Rectangle(py, px, this.height(), this.width());
     // Place wall tiles
-    for (let c of rectPerimeterCoords(py, px, this.height(), this.width())) {
+    for (let c of rect.perimeterCoords()) {
       tiles.set(c.y, c.x, Tile.Wall);
     }
     // Place doors
     let validDoors = Array<{ y: number; x: number }>();
-    for (let c of rectPerimeterCoords(py, px, this.height(), this.width(), 1)) {
+    for (let c of rect.perimeterCoords(1)) {
       if (isValidDoor(tiles, c.y, c.x)) {
         validDoors.push({ ...c });
       }
@@ -52,12 +54,7 @@ export class RectangularRoom implements Room {
       tiles.set(door.y, door.x, Tile.Door);
     }
     // Place floor tiles
-    for (let c of rectAreaCoords(
-      py + 1,
-      px + 1,
-      this.height() - 2,
-      this.width() - 2
-    )) {
+    for (let c of rect.enlarge(-2, -2).areaCoords()) {
       tiles.set(c.y, c.x, Tile.Floor);
     }
   }
