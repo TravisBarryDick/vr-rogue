@@ -1,4 +1,5 @@
 import { Array2D } from "./Array2D";
+import { Rectangle } from "./Rectangle";
 
 export enum Tile {
   Empty,
@@ -24,7 +25,7 @@ export class Level {
   tiles: Array2D<Tile>;
 
   static LevelFromTiles(tiles: Array2D<Tile>) {
-    let l = new Level(0,0);
+    let l = new Level(0, 0);
     l.tiles = tiles;
     return l;
   }
@@ -49,4 +50,20 @@ export class Level {
     return this.tiles.height;
   }
 
+  midpoint(): { y: number; x: number } {
+    let miny = this.height() - 1;
+    let maxy = 0;
+    let minx = this.width() - 1;
+    let maxx = 0;
+    const levelRect = new Rectangle(0, 0, this.height(), this.width());
+    for (let c of levelRect.areaCoords()) {
+      if (this.tiles.get(c.y, c.x) != Tile.Empty) {
+        miny = Math.min(miny, c.y);
+        maxy = Math.max(maxy, c.y);
+        minx = Math.min(minx, c.x);
+        maxx = Math.max(maxx, c.x);
+      }
+    }
+    return { y: (miny + maxy) / 2, x: (minx + maxx) / 2 };
+  }
 }
