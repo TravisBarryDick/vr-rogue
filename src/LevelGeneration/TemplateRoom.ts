@@ -2,7 +2,7 @@ import { Array2D } from "../Array2D";
 import { Tile } from "../Level";
 import { Room, isValidDoor } from "./LevelGeneration";
 import { RandomNumberGenerator } from "../RandomNumberGenerator";
-import { Rectangle } from "../Utils";
+import { Rectangle } from "../Rectangle";
 
 /**
  * Interprets a string as a TemplateRoom. Each line of the input string

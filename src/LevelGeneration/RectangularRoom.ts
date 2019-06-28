@@ -1,8 +1,9 @@
 import { Array2D } from "../Array2D";
 import { Tile } from "../Level";
 import { Room, RoomGen, isValidDoor } from "./LevelGeneration";
-import { Rectangle, randomChoice } from "../Utils";
+import { randomChoice } from "../Utils";
 import { RandomNumberGenerator } from "../RandomNumberGenerator";
+import { Rectangle } from "../Rectangle";
 
 export class RectangularRoom implements Room {
   constructor(private _height: number, private _width: number) {}
