@@ -45,7 +45,7 @@ export class TemplateRoom implements Room {
     // Rules for TemplateRoom placement:
     // 1. Cannot place any tile on an existing floor or door tile.
     // 2. At least one door must be a valid door.
-    const roomRect = new Rectangle(0, 0, this.height(), this.width());
+    const roomRect = new Rectangle(this.height(), this.width());
     let anyValidDoor = false;
     for (let c of roomRect.areaCoords()) {
       const levelTile = tiles.get(c.y + py, c.x + px);
@@ -66,7 +66,7 @@ export class TemplateRoom implements Room {
     py: number,
     px: number
   ): void {
-    const roomRect = new Rectangle(0, 0, this.height(), this.width());
+    const roomRect = new Rectangle(this.height(), this.width());
     // Place walls and doors
     for (let c of roomRect.areaCoords()) {
       const roomTile = this.tiles.get(c.y, c.x);

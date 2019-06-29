@@ -4,10 +4,10 @@
  */
 export class Rectangle {
   constructor(
-    readonly y: number,
-    readonly x: number,
     readonly height: number,
-    readonly width: number
+    readonly width: number,
+    readonly y: number = 0,
+    readonly x: number = 0
   ) {}
 
   /**
@@ -19,7 +19,7 @@ export class Rectangle {
     const new_x = this.x - Math.floor(widthDelta / 2);
     const new_height = this.height + heightDelta;
     const new_width = this.width + widthDelta;
-    return new Rectangle(new_y, new_x, new_height, new_width);
+    return new Rectangle(new_height, new_width, new_y, new_x);
   }
 
   /**

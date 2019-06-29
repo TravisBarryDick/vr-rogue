@@ -22,7 +22,7 @@ export class RectangularRoom implements Room {
     // 2. There must be at least one valid door location (i.e., a location along
     //    the room's wall - but not a corner - that is adjacent to a floor tile
     //    alreay in the level).
-    const rect = new Rectangle(py, px, this.height(), this.width());
+    const rect = new Rectangle(this.height(), this.width(), py, px);
     // Check to make sure we don't overlap with any existing floor or door tiles
     for (let c of rect.areaCoords()) {
       const levelTile = tiles.get(c.y, c.x);
@@ -44,7 +44,7 @@ export class RectangularRoom implements Room {
     py: number,
     px: number
   ): void {
-    const rect = new Rectangle(py, px, this.height(), this.width());
+    const rect = new Rectangle(this.height(), this.width(), py, px);
     // Place wall tiles
     for (let c of rect.perimeterCoords()) {
       tiles.set(c.y, c.x, Tile.Wall);

@@ -55,7 +55,7 @@ export class Level {
     let maxy = 0;
     let minx = this.width() - 1;
     let maxx = 0;
-    const levelRect = new Rectangle(0, 0, this.height(), this.width());
+    const levelRect = new Rectangle(this.height(), this.width());
     for (let c of levelRect.areaCoords()) {
       if (this.tiles.get(c.y, c.x) != Tile.Empty) {
         miny = Math.min(miny, c.y);
