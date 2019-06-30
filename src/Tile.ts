@@ -122,7 +122,7 @@ export const DoorComponent = new (class extends TileComponent {
   aframeInit(tile: Tile) {
     let floorPlane = document.createElement("a-plane");
     floorPlane.setAttribute("rotation", "-90 0 0");
-    floorPlane.setAttribute("color", "green");
+    floorPlane.setAttribute("color", "red");
     floorPlane.setAttribute("roughness", 1);
     tile.aframeEntity.appendChild(floorPlane);
   }
@@ -133,6 +133,38 @@ export const DoorComponent = new (class extends TileComponent {
 export const WalkableComponent = new (class extends TileComponent {
   getId() {
     return "Walkable";
+  }
+})();
+
+// --- LevelStartComponent --- //
+
+export const LevelStartComponent = new (class extends TileComponent {
+  getId() {
+    return "Start";
+  }
+
+  aframeInit(tile: Tile) {
+    let floorPlane = document.createElement("a-plane");
+    floorPlane.setAttribute("rotation", "-90 0 0");
+    floorPlane.setAttribute("color", "green");
+    floorPlane.setAttribute("roughness", 1);
+    tile.aframeEntity.appendChild(floorPlane);
+  }
+})();
+
+// --- LevelEndComponent --- //
+
+export const LevelEndComponent = new (class extends TileComponent {
+  getId() {
+    return "End";
+  }
+
+  aframeInit(tile: Tile) {
+    let floorPlane = document.createElement("a-plane");
+    floorPlane.setAttribute("rotation", "-90 0 0");
+    floorPlane.setAttribute("color", "blue");
+    floorPlane.setAttribute("roughness", 1);
+    tile.aframeEntity.appendChild(floorPlane);
   }
 })();
 
@@ -154,6 +186,18 @@ export const TILES = {
   makeDoor() {
     return new Tile()
       .addComponent(DoorComponent)
+      .addComponent(WalkableComponent);
+  },
+
+  makeStart() {
+    return new Tile()
+      .addComponent(LevelStartComponent)
+      .addComponent(WalkableComponent);
+  },
+
+  makeEnd() {
+    return new Tile()
+      .addComponent(LevelEndComponent)
       .addComponent(WalkableComponent);
   }
 };

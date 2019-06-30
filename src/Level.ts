@@ -1,6 +1,5 @@
 import { Array2D } from "./Array2D";
 import { Tile } from "./Tile";
-import { Rectangle } from "./Rectangle";
 
 export class Level {
   tiles: Array2D<Tile>;

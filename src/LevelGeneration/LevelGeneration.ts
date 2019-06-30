@@ -28,9 +28,10 @@
 
 import { Array2D } from "../Array2D";
 import { Level } from "../Level";
-import { Tile, FloorComponent } from "../Tile";
+import { Tile, FloorComponent, WalkableComponent, TILES } from "../Tile";
 import { RandomNumberGenerator } from "../RandomNumberGenerator";
 import { discreteSample, randomChoice } from "../Utils";
+import { Rectangle } from "../Rectangle";
 
 //////////////////
 // --- Room --- //
@@ -120,6 +121,7 @@ export class LevelGenerator {
       let room = this.chooseRoom(rng);
       this.addRoom(rng, tiles, room);
     }
+    this.addRandomStartEnd(rng, tiles);
     return Level.LevelFromTiles(tiles);
   }
 
@@ -152,6 +154,21 @@ export class LevelGenerator {
     let [y, x] = randomChoice(rng, validPositions);
     r.placeAt(rng, tiles, y, x);
     return true;
+  }
+
+  addRandomStartEnd(rng: RandomNumberGenerator, tiles: Array2D<Tile>) {
+    let walkables = new Array<{y: number, x: number}>();
+    for (let c of new Rectangle(tiles.height, tiles.width).areaCoords()) {
+      const tile = tiles.get(c.y, c.x);
+      if (tile.hasComponent(WalkableComponent)) {
+        walkables.push({...c});
+      }
+    }
+    const start = randomChoice(rng, walkables);
+    walkables = walkables.filter(t => t !== start);
+    const end = randomChoice(rng, walkables);
+    tiles.set(start.y, start.x, TILES.makeStart());
+    tiles.set(end.y, end.x, TILES.makeEnd());
   }
 }
 
