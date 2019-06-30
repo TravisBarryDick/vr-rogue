@@ -7,6 +7,23 @@ export class Array2D<E> {
   readonly width: number;
 
   /**
+   * Creates a Array2D whose (row,column)th entry is given by f(row,column).
+   */
+  static comprehension<E>(
+    height: number,
+    width: number,
+    f: (row: number, col: number) => E
+  ) {
+    let arr = new Array2D<E>(height, width);
+    for (let r = 0; r < height; r++) {
+      for (let c = 0; c < width; c++) {
+        arr.set(r, c, f(r, c));
+      }
+    }
+    return arr;
+  }
+
+  /**
    * Constructs a new Array2D with the given height and width. If a default
    * element is specified, then the array is filled with that element.
    */
