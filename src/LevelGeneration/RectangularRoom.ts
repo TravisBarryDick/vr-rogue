@@ -1,10 +1,13 @@
 import { Array2D } from "../Array2D";
-import { Tile } from "../Level";
+import { Tile, DoorComponent, WalkableComponent, TILES } from "../Tile";
 import { Room, RoomGen, isValidDoor } from "./LevelGeneration";
 import { randomChoice } from "../Utils";
 import { RandomNumberGenerator } from "../RandomNumberGenerator";
 import { Rectangle } from "../Rectangle";
 
+/**
+ * A rectangular room with a single door.
+ */
 export class RectangularRoom implements Room {
   constructor(private _height: number, private _width: number) {}
 
@@ -18,15 +21,14 @@ export class RectangularRoom implements Room {
 
   canPlaceAt(tiles: Array2D<Tile>, py: number, px: number): boolean {
     // Rules for RectangleRoom Placement:
-    // 1. Must not overlap with any floor or door tiles already in the level.
+    // 1. Must not overlap with any walkable tile already in the level
     // 2. There must be at least one valid door location (i.e., a location along
     //    the room's wall - but not a corner - that is adjacent to a floor tile
     //    alreay in the level).
     const rect = new Rectangle(this.height(), this.width(), py, px);
-    // Check to make sure we don't overlap with any existing floor or door tiles
+    // Check to make sure we don't overlap with any existing walkable tile.
     for (let c of rect.areaCoords()) {
-      const levelTile = tiles.get(c.y, c.x);
-      if (levelTile === Tile.Floor || levelTile === Tile.Door) return false;
+      if (tiles.get(c.y, c.x).hasComponent(WalkableComponent)) return false;
     }
     // Check to make sure there is at least one valid door
     let atLeastOneDoor = false;
@@ -45,10 +47,6 @@ export class RectangularRoom implements Room {
     px: number
   ): void {
     const rect = new Rectangle(this.height(), this.width(), py, px);
-    // Place wall tiles
-    for (let c of rect.perimeterCoords()) {
-      tiles.set(c.y, c.x, Tile.Wall);
-    }
     // Place door
     let validDoors = Array<{ y: number; x: number }>();
     for (let c of rect.perimeterCoords(1)) {
@@ -58,11 +56,17 @@ export class RectangularRoom implements Room {
     }
     if (validDoors.length > 0) {
       let door = randomChoice(rng, validDoors);
-      tiles.set(door.y, door.x, Tile.Door);
+      tiles.set(door.y, door.x, TILES.makeDoor());
+    }
+    // Place wall tiles
+    for (let c of rect.perimeterCoords()) {
+      if (!tiles.get(c.y, c.x).hasComponent(DoorComponent)) {
+        tiles.set(c.y, c.x, TILES.makeWall());
+      }
     }
     // Place floor tiles
     for (let c of rect.enlarge(-2, -2).areaCoords()) {
-      tiles.set(c.y, c.x, Tile.Floor);
+      tiles.set(c.y, c.x, TILES.makeFloor());
     }
   }
 }
