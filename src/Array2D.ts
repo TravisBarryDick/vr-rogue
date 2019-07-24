@@ -58,6 +58,10 @@ export class Array2D<E> {
     return result;
   }
 
+  inBounds(y: number, x: number) {
+    return 0 <= y && y < this.height && 0 <= x && x < this.width;
+  }
+
   /** Convert a row and coordinate into a linear index into the data array */
   protected rc2ix(this: Array2D<E>, row: number, column: number): number {
     return column * this.height + row;

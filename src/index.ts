@@ -3,91 +3,108 @@ require("aframe-orbit-controls");
 require("aframe-extras");
 
 import { ComponentDefinition } from "aframe";
-import { Level } from "./Level";
-import { LevelGenerator } from "./LevelGeneration/LevelGeneration";
-import { RectangleRoomGenerator } from "./LevelGeneration/RectangularRoom";
-import { parseTemplateRoom } from "./LevelGeneration/TemplateRoom";
+import { PreDungeon, PreDungeonGen } from "./PreDungeon/PreDungeonGen";
+import { RectangleRoomGenerator } from "./PreDungeon/RectangleRoom";
+import { parseTemplateRoom } from "./PreDungeon/TemplateRoom";
 import { LCG } from "./RandomNumberGenerator";
 import { Rectangle } from "./Rectangle";
 
-const tRoom = parseTemplateRoom(`
-####E####
+const tRoom = parseTemplateRoom(
+  `
+####^####
 #.......#
-E..#I#..E
-#.##.##.#
+<.......>
+#.......#
 ###...###
 %%#...#%%
 %%#...#%%
 %%#...#%%
-%%##E##%%
-`);
+%%##v##%%
+`,
+  6
+);
 
-const oRoom = parseTemplateRoom(`
-%%%#E#%%%
+const oRoom = parseTemplateRoom(
+  `
+%%%#^#%%%
 %%#...#%%
 %#.....#%
 #.......#
-E.......E
+<.......>
 #.......#
 %#.....#%
 %%#...#%%
-%%%#E#%%%
-`);
+%%%#v#%%%
+`,
+  10
+);
 
-const sRoom = parseTemplateRoom(`
+const sRoom = parseTemplateRoom(
+  `
 #########
-#.......E
+#.......>
 #.......#
 #..######
 #.......#
 #.......#
 ######..#
 #.......#
-E.......#
+<.......#
 #########
-`);
-
-const vRoom = parseTemplateRoom(`
-####%####
-#..###..#
-##..#..##
-%##...##%
-%%##.##%%
-%%%#E#%%%
-`);
+`,
+  6
+);
 
 interface RogueLevel {
-  level: Level;
+  predungeon: PreDungeon;
   createGeometry(): void;
 }
 
 AFRAME.registerComponent("rogue-level", <ComponentDefinition<RogueLevel>>{
   init: function() {
-    let generator = new LevelGenerator(
+    let generator = new PreDungeonGen(
       50,
       50,
       20,
       [
-        RectangleRoomGenerator(4, 10, 4, 10),
+        RectangleRoomGenerator(5, 13, 5, 13, 6),
         () => tRoom,
         () => oRoom,
-        () => sRoom,
-        () => vRoom
+        () => sRoom
       ],
-      [5, 1, 1, 1, 0.5]
+      [1, 0.1, 0.1, 0.1]
     );
     const seed = Math.floor(Math.random() * 1000);
-    this.level = generator.generate(new LCG(seed));
+    this.predungeon = generator.generate(new LCG(seed));
     this.createGeometry();
   },
 
   createGeometry: function() {
-    const rect = new Rectangle(this.level.height(), this.level.width());
+    const rect = new Rectangle(
+      this.predungeon.height(),
+      this.predungeon.width()
+    );
     for (let c of rect.areaCoords()) {
       const aframeEntity = document.createElement("a-entity");
       aframeEntity.setAttribute("position", `${c.x} 0 ${c.y}`);
-      this.level.tiles.get(c.y, c.x).aframeInit(aframeEntity);
-      this.el.appendChild(aframeEntity);
+      if (this.predungeon.isFloor(c.y, c.x)) {
+        let floorPlane = document.createElement("a-plane");
+        floorPlane.setAttribute("rotation", "-90 0 0");
+        floorPlane.setAttribute("color", "brown");
+        floorPlane.setAttribute("roughness", 1);
+        aframeEntity.appendChild(floorPlane);
+        this.el.appendChild(aframeEntity);
+      } else if (this.predungeon.isFloorAdjacent(c.y, c.x)) {
+        let wallBox = document.createElement("a-box");
+        wallBox.setAttribute("height", "1");
+        wallBox.setAttribute("position", "0 0.5 0");
+        wallBox.setAttribute("material", "src", "#wall");
+        wallBox.setAttribute("repeat", "1 1");
+        wallBox.setAttribute("roughness", 1);
+        wallBox.setAttribute("metalness", 0);
+        aframeEntity.appendChild(wallBox);
+        this.el.appendChild(aframeEntity);
+      }
     }
   }
 });

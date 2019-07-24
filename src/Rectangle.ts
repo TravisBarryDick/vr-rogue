@@ -22,6 +22,16 @@ export class Rectangle {
     return new Rectangle(new_height, new_width, new_y, new_x);
   }
 
+  /** Returns whether the coordinate (y, x) is contained in the rectangle */
+  contains(y: number, x: number): boolean {
+    return (
+      y >= this.y &&
+      y < this.y + this.height &&
+      x >= this.x &&
+      x < this.x + this.width
+    );
+  }
+
   /**
    * Yields the coordinates belonging to the rectangle in row major order
    * starting from the top left corner
